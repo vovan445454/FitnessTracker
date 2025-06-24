@@ -27,43 +27,46 @@ jobs:
         python -m pip install --upgrade pip wheel setuptools virtualenv
         pip install buildozer cython==0.29.36
     
+    # Явная установка python-for-android
+    - name: Clone python-for-android
+      run: |
+        git clone https://github.com/kivy/python-for-android.git
+        cd python-for-android
+        pip install .
+    
+    - name: Initialize Buildozer
+      run: |
+        buildozer init
+        echo "p4a.branch = master" >> buildozer.spec
+        echo "android.ndk_path = $HOME/.buildozer/android/platform/android-ndk-r25b" >> buildozer.spec
+        
     - name: Fix permissions
       run: sudo chmod -R a+rwx .
       
     - name: Build APK
       run: |
-        # Очищаем предыдущие сборки
         buildozer android clean
-        
-        # Запускаем сборку с подробным выводом
         buildozer -v android debug 2>&1 | tee build.log
         
-        # Проверяем наличие APK
-        if [ ! -f bin/*.apk ]; then
-          echo "APK file not found! Searching in other locations..."
+    - name: Verify APK exists
+      run: |
+        if ls bin/*.apk 1> /dev/null 2>&1; then
+          echo "APK found successfully"
+        else
+          echo "APK not found! Searching alternatives..."
           find . -name "*.apk" -print
           exit 1
         fi
-        
-    - name: Find and list APK files
-      run: |
-        echo "### APK files found: ###"
-        find . -name "*.apk" -print
-        echo "########################"
         
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: fitness-tracker-apk
-        path: |
-          bin/*.apk
-          bin/*.apk.idsig
+        path: bin/*.apk
         if-no-files-found: error
         
-    - name: Upload build artifacts
+    - name: Upload build logs
       uses: actions/upload-artifact@v4
       with:
-        name: build-artifacts
-        path: |
-          .buildozer/
-          build.log
+        name: build-logs
+        path: build.log
