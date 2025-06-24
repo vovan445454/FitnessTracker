@@ -2,7 +2,7 @@ name: Build APK
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-22.04  # новая версия ОС
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     
@@ -34,8 +34,7 @@ jobs:
         buildozer -v android debug 2>&1 | tee build.log
       
     - name: Upload APK artifacts
-      uses: actions/upload-artifact@v4
-      if: success() || failure()  # всегда загружать артефакты
+      uses: actions/upload-artifact@v4  # ИСПРАВЛЕННАЯ ВЕРСИЯ
       with:
         name: build-artifacts
         path: |
