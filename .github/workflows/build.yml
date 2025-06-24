@@ -6,7 +6,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python 3.10
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
@@ -19,11 +19,12 @@ jobs:
           autoconf libtool pkg-config \
           zlib1g-dev libncurses5-dev \
           libncursesw5-dev libtinfo5 cmake \
-          libffi-dev libssl-dev libltdl-dev
+          libffi-dev libssl-dev libltdl-dev \
+          python3-pip
         
     - name: Install Python dependencies
       run: |
-        pip install --upgrade pip wheel setuptools virtualenv
+        python -m pip install --upgrade pip wheel setuptools virtualenv
         pip install buildozer cython==0.29.36
     
     - name: Fix permissions
@@ -31,13 +32,38 @@ jobs:
       
     - name: Build APK
       run: |
+        # Очищаем предыдущие сборки
+        buildozer android clean
+        
+        # Запускаем сборку с подробным выводом
         buildozer -v android debug 2>&1 | tee build.log
-      
-    - name: Upload APK artifacts
-      uses: actions/upload-artifact@v4  # ИСПРАВЛЕННАЯ ВЕРСИЯ
+        
+        # Проверяем наличие APK
+        if [ ! -f bin/*.apk ]; then
+          echo "APK file not found! Searching in other locations..."
+          find . -name "*.apk" -print
+          exit 1
+        fi
+        
+    - name: Find and list APK files
+      run: |
+        echo "### APK files found: ###"
+        find . -name "*.apk" -print
+        echo "########################"
+        
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: fitness-tracker-apk
+        path: |
+          bin/*.apk
+          bin/*.apk.idsig
+        if-no-files-found: error
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
         path: |
-          bin/
           .buildozer/
           build.log
