@@ -3,14 +3,11 @@ title = Fitness Tracker
 package.name = fitnesstracker
 package.domain = org.example
 source.dir = .
-source.include_exts = py,json,png,jpg  # добавить изображения
+source.include_exts = py,json,png,jpg,kv  # добавил .kv на случай использования
 version = 1.0
-requirements = python3,kivy,datetime  # исправьте зависимости
+requirements = python3,kivy  # убрал datetime, версия Kivy не указана (или используйте kivy==2.3.0)
 orientation = portrait
-osx.python_version = 3
-osx.kivy_version = 2.3.0  # обновите версию
 android.api = 33
 android.minapi = 21
-android.ndk = 25b  # новая версия NDK
-p4a.branch = 2023.06.11  # стабильная ветка
+android.ndk = 23b  # более стабильная версия NDK
 android.permissions = INTERNET
