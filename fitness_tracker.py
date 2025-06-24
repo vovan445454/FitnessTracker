@@ -102,8 +102,8 @@ class FitnessTrackerApp(App):
         super().__init__(**kwargs)
         self.workouts = []
         self.exercises = ['Приседания', 'Отжимания', 'Бег', 'Другое']
-        self.data_file = 'workouts.json'
-        self.exercises_file = 'exercises.json'
+        self.data_file = os.path.join(self.user_data_dir, 'workouts.json')
+        self.exercises_file = os.path.join(self.user_data_dir, 'exercises.json')
         self.sort_order = 'asc'
         self.load_workouts()
         self.load_exercises()
