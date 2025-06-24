@@ -14,3 +14,7 @@ android.minapi = 21
 android.ndk = 25b  # новая версия NDK
 p4a.branch = 2023.06.11  # стабильная ветка
 android.permissions = INTERNET
+log_level = 2
+requirements = python3==3.10.13, kivy==2.3.0, datetime
+p4a.branch = master
+android.ndk = 25b
